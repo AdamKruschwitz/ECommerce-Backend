@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
   // find one category by its `id` value
   // be sure to include its associated Products
   try {
-    const category = await Category.findByPk(req.params.id) // options?
+    const category = await Category.findByPk(req.params.id) 
     if(!category) res.status(404).json("Category not found");
     else res.status(200).json(category);
   } catch (err) {
@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   // create a new category
   try {
-    const category = await Category.create(req.body); // What options should this take?
+    const category = await Category.create(req.body); 
     res.status(200).json(category);
   } catch (err) {
     res.status(500).json(err);
