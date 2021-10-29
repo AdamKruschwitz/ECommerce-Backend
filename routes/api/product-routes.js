@@ -66,6 +66,7 @@ router.post('/', async (req, res) => {
 
 // update product
 router.put('/:id', (req, res) => {
+  console.log("updating product...")
   // update product data
   Product.update(req.body, {
     where: {
@@ -73,10 +74,13 @@ router.put('/:id', (req, res) => {
     },
   })
     .then((product) => {
+      // console.log('finding productTags...')
       // find all associated tags from ProductTag
       return ProductTag.findAll({ where: { product_id: req.params.id } });
     })
     .then((productTags) => {
+      // console.log('Creating product tag map')
+      // console.log(productTags);
       // get list of current tag_ids
       const productTagIds = productTags.map(({ tag_id }) => tag_id);
       // create filtered list of new tag_ids
@@ -88,12 +92,15 @@ router.put('/:id', (req, res) => {
             tag_id,
           };
         });
+      // console.log('Created new productTags')
       // figure out which ones to remove
       const productTagsToRemove = productTags
         .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
         .map(({ id }) => id);
 
       // run both actions
+
+      // console.log('running promises to destroy and create tags');
       return Promise.all([
         ProductTag.destroy({ where: { id: productTagsToRemove } }),
         ProductTag.bulkCreate(newProductTags),
@@ -115,8 +122,8 @@ router.delete('/:id', async (req, res) => {
       }
     });
 
-    if(!productFound) res.status(404).send("Product not found");
-    else res.status(200).send(productFound);
+    if(!productFound) res.sendStatus(404);
+    else res.sendStatus(200);
   } catch (err) {
     res.status(500).json(err);
   }
